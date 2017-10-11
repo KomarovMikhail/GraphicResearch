@@ -65,7 +65,7 @@ if __name__ == '__main__':
     # sys.exit(app.exec_())
 
     solver = res.Researcher()
-    print(solver.calculate_integral())
+    print(solver.find_zeroes())
 
 
 
