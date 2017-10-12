@@ -60,12 +60,13 @@ class PlotCanvas(FigureCanvas):
 
 
 if __name__ == '__main__':
-    # app = QApplication(sys.argv)
-    # ex = App()
-    # sys.exit(app.exec_())
+    app = QApplication(sys.argv)
+    ex = App()
+    sys.exit(app.exec_())
 
-    solver = res.Researcher()
-    print(solver.find_zeroes())
+    # solver = res.Researcher()
+    # print(solver.find_zeroes())
+    # print(solver.calculate_integral())
 
 
 

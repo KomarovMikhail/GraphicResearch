@@ -4,20 +4,21 @@ import numpy as np
 class Researcher:
 
     def __init__(self):
-        self._eps = 0.01
+        self._eps = 0.001
         self._a = -10
         self._b = 10
 
-    def function(self, x):
+    @staticmethod
+    def function(x):
         return 5 - ((2 - 18 * 5 * x) + 16 * (5 * x) ** 2) / (1 + 5 * x ** 4)
 
-    def calculate_integral(self):
+    def calculate_integral(self, a=-10, b=10):
 
-        # method of medium rectangles
+        """ method of medium rectangles """
 
         result = 0
-        current_pos = self._a
-        while current_pos < self._b:
+        current_pos = a
+        while current_pos < b:
             result += self._eps * self.function(current_pos + self._eps / 2)
             current_pos += self._eps
 
@@ -25,25 +26,31 @@ class Researcher:
 
     def find_zeroes(self):
 
-        # method of chords
+        """ method of chords
+        Using graphic we found out
+        the following interval
+        which contains zeroes of the function: """
 
+        intervals = [[-5, -3], [-1, 0], [0.175, 1], [3, 5]]
         result = []
-        x_0 = self._a
-        x_1 = self._a + 1
 
-        x_2 = x_1 - (self.function(x_1) * (x_1 - x_0)) / (self.function(x_1) - self.function(x_0))
-        x_0 = x_1
-        x_1 = x_2
+        i = 0
+        while i < 4:
+            x_0 = intervals[i][0]
+            x_1 = intervals[i][1]
 
-        while np.abs(self.function(x_2)) > self._eps or np.abs(x_1 - x_0) > self._eps:
-            x_2 = x_1 - (self.function(x_1) * (x_1 - x_0)) / (self.function(x_1) - self.function(x_0))
-            x_0 = x_1
-            x_1 = x_2
-        result.append(x_2)
-
+            f_0 = self.function(x_0)
+            f_1 = self.function(x_1)
+            # x_1 = x_1 - f_1 / (f_1 - f_0) * (x_1 - x_0)
+            while np.abs(f_1) > self._eps:
+                x_1 = x_1 - f_1 / (f_1 - f_0) * (x_1 - x_0)
+                f_1 = self.function(x_1)
+            result.append(x_1)
+            i += 1
         return result
 
-    def diff_function(self, x):
+    @staticmethod
+    def diff_function(x):
         return x
 
     def get_eps(self):
