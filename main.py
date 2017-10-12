@@ -40,6 +40,9 @@ class App(QMainWindow):
         self.line_edit_2 = QLineEdit(self)
         self.button_1 = QPushButton('Calculate integral', self)
         self.button_2 = QPushButton('Find zeroes', self)
+        self.button_3 = QPushButton('Draw f(x)', self)
+        self.button_4 = QPushButton('Draw f\'(x)', self)
+        self.button_5 = QPushButton('Clean', self)
         self.plot = PlotCanvas(self, width=6, height=5)
         self.initUI()
 
@@ -60,14 +63,15 @@ class App(QMainWindow):
         self.line_edit_a.move(610, 50)
         self.line_edit_a.resize(85, 30)
         self.line_edit_a.setText(str(self.a))
-        self.line_edit_a.textChanged[str].connect(self.onChangedA)
+        self.line_edit_a.textChanged[str].connect(self.on_changed_a)
 
         self.line_edit_b.move(705, 50)
         self.line_edit_b.resize(85, 30)
         self.line_edit_b.setText(str(self.b))
-        self.line_edit_b.textChanged[str].connect(self.onChangedB)
+        self.line_edit_b.textChanged[str].connect(self.on_changed_b)
 
-        self.button_1.setToolTip('Calculates integral from A to B\nPush to see the result in the field below')
+        self.button_1.setToolTip('Calculates integral from A to B\n'
+                                 'Push to see the result in the field below')
         self.button_1.move(610, 85)
         self.button_1.resize(180, 40)
         self.button_1.clicked.connect(self.calculate_integral)
@@ -85,10 +89,24 @@ class App(QMainWindow):
         self.line_edit_2.resize(180, 30)
         self.line_edit_2.setReadOnly(True)
 
+        self.button_3.setToolTip('Push to draw graphic')
+        self.button_3.move(610, 265)
+        self.button_3.resize(180, 40)
+        self.button_3.clicked.connect(self.draw_function)
+
+        self.button_4.setToolTip('Push to draw graphic')
+        self.button_4.move(610, 320)
+        self.button_4.resize(180, 40)
+        self.button_4.clicked.connect(self.draw_derivative)
+
+        self.button_5.setToolTip('Push to clean all the fields')
+        self.button_5.move(610, 375)
+        self.button_5.resize(180, 40)
+        self.button_5.clicked.connect(self.clean_all)
 
         self.show()
 
-    def onChangedA(self, text):
+    def on_changed_a(self, text):
         if len(text) == 0:
             return
         if text[0] == '-' and len(text) == 1:
@@ -99,7 +117,7 @@ class App(QMainWindow):
         else:
             self.a = float(text)
 
-    def onChangedB(self, text):
+    def on_changed_b(self, text):
         if len(text) == 0:
             return
         if text[0] == '-' and len(text) == 1:
@@ -114,6 +132,8 @@ class App(QMainWindow):
     def clean_all(self):
         self.line_edit_1.clear()
         self.line_edit_2.clear()
+        self.line_edit_a.setText('-10.0')
+        self.line_edit_b.setText('10.0')
 
     @pyqtSlot()
     def calculate_integral(self):
@@ -131,6 +151,13 @@ class App(QMainWindow):
             result = result + str(zeroes[i]) + '\n'
         self.line_edit_2.setText(result)
 
+    @pyqtSlot()
+    def draw_function(self):
+        self.plot.plot(self.solver.function)
+
+    def draw_derivative(self):
+        self.plot.plot(self.solver.diff_function)
+
 
 class PlotCanvas(FigureCanvas):
     def __init__(self, parent=None, width=5, height=4, dpi=100):
@@ -146,15 +173,14 @@ class PlotCanvas(FigureCanvas):
         FigureCanvas.updateGeometry(self)
         # self.plot()
 
-    def plot(self):
+    def plot(self, func):
         data = [random.random() for i in range(25)]
         ax = self.figure.add_subplot(111)
         #ax.plot(data, 'r-')
         ax.grid()
         x = np.arange(-10, 10, 0.1)
-        solver = res.Researcher()
-        ax.plot(x, solver.function(x),)
-        ax.set_title('PyQt Matplotlib Example')
+        ax.plot(x, func(x))
+        ax.set_title('Coordinate plane')
         self.draw()
 
 
@@ -163,9 +189,6 @@ if __name__ == '__main__':
     ex = App()
     sys.exit(app.exec_())
 
-    # solver = res.Researcher()
-    # print(solver.find_zeroes())
-    # print(solver.calculate_integral())
 
 
 

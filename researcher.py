@@ -10,7 +10,7 @@ class Researcher:
 
     @staticmethod
     def function(x):
-        return 5 - ((2 - 18 * 5 * x) + 16 * (5 * x) ** 2) / (1 + 5 * x ** 4)
+        return 5 - ((2 - 18 * 5 * x) + 16 * (5 * x)**2) / (1 + 5 * x**4)
 
     def calculate_integral(self, a=-10, b=10):
 
@@ -50,7 +50,7 @@ class Researcher:
 
     @staticmethod
     def diff_function(x):
-        return x
+        return 2 * 5 * (16 * 5**2 * x**5 - 5 * (27 * x**3 + 16) * x + 4 * x**3 + 9) / (5 * x**4 + 1)**2
 
     def get_eps(self):
         return self._eps
