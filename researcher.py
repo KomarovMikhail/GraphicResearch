@@ -27,9 +27,8 @@ class Researcher:
     def find_zeroes(self):
 
         """ method of chords
-        Using graphic we found out
-        the following interval
-        which contains zeroes of the function: """
+        Using graphic we found the following intervals
+        which contain zeroes of the function: """
 
         intervals = [[-5, -3], [-1, 0], [0.175, 1], [3, 5]]
         result = []
@@ -41,12 +40,12 @@ class Researcher:
 
             f_0 = self.function(x_0)
             f_1 = self.function(x_1)
-            # x_1 = x_1 - f_1 / (f_1 - f_0) * (x_1 - x_0)
             while np.abs(f_1) > self._eps:
                 x_1 = x_1 - f_1 / (f_1 - f_0) * (x_1 - x_0)
                 f_1 = self.function(x_1)
             result.append(x_1)
             i += 1
+
         return result
 
     @staticmethod
