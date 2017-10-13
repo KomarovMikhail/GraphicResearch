@@ -1,7 +1,7 @@
 import sys
 
 from PyQt5.QtWidgets import QApplication, QMainWindow, QMenu, QVBoxLayout, QSizePolicy, QMessageBox, QWidget, \
-    QPushButton, QLabel, QLineEdit
+    QPushButton, QLabel, QLineEdit, QScrollArea, QScrollBar
 from PyQt5.QtGui import QIcon
 
 from PyQt5.QtCore import pyqtSlot
@@ -24,27 +24,38 @@ class App(QMainWindow):
         self.top = 10
         self.title = 'Graphic Researcher'
         self.width = 800
-        self.height = 640
+        self.height = 650
 
         # Borders of the interval and Researcher object
         self.a = -10.0
         self.b = 10.0
+        self.x = ''
         self.solver = res.Researcher()
 
         # Window fields and buttons
         self.label_a = QLabel(self)
         self.label_b = QLabel(self)
+        self.label_1 = QLabel(self)
+        self.label_2 = QLabel(self)
+        self.label_3 = QLabel(self)
         self.line_edit_a = QLineEdit(self)
         self.line_edit_b = QLineEdit(self)
         self.line_edit_1 = QLineEdit(self)
         self.line_edit_2 = QLineEdit(self)
+        self.line_edit_3 = QLineEdit(self)
+        self.line_edit_4 = QLineEdit(self)
+        self.line_edit_5 = QLineEdit(self)
         self.button_1 = QPushButton('Calculate integral', self)
         self.button_2 = QPushButton('Find zeroes', self)
         self.button_3 = QPushButton('Draw f(x)', self)
         self.button_4 = QPushButton('Draw f\'(x)', self)
         self.button_5 = QPushButton('Clean', self)
+        self.button_6 = QPushButton('Calculate', self)
         self.plot = PlotCanvas(self, width=6, height=5)
         self.initUI()
+
+        self._drown_1 = False
+        self._drown_2 = False
 
     def initUI(self):
         self.setWindowTitle(self.title)
@@ -104,6 +115,35 @@ class App(QMainWindow):
         self.button_5.resize(180, 40)
         self.button_5.clicked.connect(self.clean_all)
 
+        self.label_1.move(10, 510)
+        self.label_1.resize(50, 40)
+        self.label_1.setText('x = ')
+
+        self.label_2.move(10, 555)
+        self.label_2.resize(50, 40)
+        self.label_2.setText('f(x) = ')
+
+        self.label_3.move(10, 600)
+        self.label_3.resize(50, 40)
+        self.label_3.setText('f\'(x) = ')
+
+        self.line_edit_3.move(70, 510)
+        self.line_edit_3.resize(160, 30)
+        self.line_edit_3.textChanged[str].connect(self.on_changed_1)
+
+        self.line_edit_4.move(70, 555)
+        self.line_edit_4.resize(160, 30)
+        self.line_edit_4.setReadOnly(True)
+
+        self.line_edit_5.move(70, 600)
+        self.line_edit_5.resize(160, 30)
+        self.line_edit_5.setReadOnly(True)
+
+        self.button_6.setToolTip('Push to calculate f(x) and f\'(x) values')
+        self.button_6.move(240, 600)
+        self.button_6.resize(100, 40)
+        self.button_6.clicked.connect(self.calculate)
+
         self.show()
 
     def on_changed_a(self, text):
@@ -128,12 +168,18 @@ class App(QMainWindow):
         else:
             self.b = float(text)
 
+    def on_changed_1(self, text):
+        self.x = text
+
     @pyqtSlot()
     def clean_all(self):
         self.line_edit_1.clear()
         self.line_edit_2.clear()
         self.line_edit_a.setText('-10.0')
         self.line_edit_b.setText('10.0')
+        self.line_edit_3.clear()
+        self.line_edit_4.clear()
+        self.line_edit_5.clear()
 
     @pyqtSlot()
     def calculate_integral(self):
@@ -153,10 +199,28 @@ class App(QMainWindow):
 
     @pyqtSlot()
     def draw_function(self):
-        self.plot.plot(self.solver.function)
+        if not self._drown_1:
+            self._drown_1 = True
+            self.plot.plot(self.solver.function, 'f(x)')
+        else:
+            return
 
+    @pyqtSlot()
     def draw_derivative(self):
-        self.plot.plot(self.solver.diff_function)
+        if not self._drown_2:
+            self._drown_2 = True
+            self.plot.plot(self.solver.diff_function, 'f\'(x)')
+        else:
+            return
+
+    @pyqtSlot()
+    def calculate(self):
+        if len(self.x) == 0:
+            return
+        else:
+            x = float(self.x)
+            self.line_edit_4.setText(str(self.solver.function(x)))
+            self.line_edit_5.setText(str(self.solver.diff_function(x)))
 
 
 class PlotCanvas(FigureCanvas):
@@ -171,17 +235,19 @@ class PlotCanvas(FigureCanvas):
                                    QSizePolicy.Expanding,
                                    QSizePolicy.Expanding)
         FigureCanvas.updateGeometry(self)
-        # self.plot()
+        self.add_grid()
 
-    def plot(self, func):
-        data = [random.random() for i in range(25)]
+    def plot(self, func, name=''):
         ax = self.figure.add_subplot(111)
-        #ax.plot(data, 'r-')
-        ax.grid()
         x = np.arange(-10, 10, 0.1)
-        ax.plot(x, func(x))
+        ax.plot(x, func(x), label=name)
         ax.set_title('Coordinate plane')
+        ax.legend()
         self.draw()
+
+    def add_grid(self):
+        ax = self.figure.add_subplot(111)
+        ax.grid()
 
 
 if __name__ == '__main__':
