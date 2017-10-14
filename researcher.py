@@ -4,7 +4,7 @@ import numpy as np
 class Researcher:
 
     def __init__(self):
-        self._eps = 0.001
+        self._eps = 0.0001
         self._a = -10
         self._b = 10
 

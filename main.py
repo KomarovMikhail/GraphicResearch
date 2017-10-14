@@ -51,11 +51,13 @@ class App(QMainWindow):
         self.button_4 = QPushButton('Draw f\'(x)', self)
         self.button_5 = QPushButton('Clean', self)
         self.button_6 = QPushButton('Calculate', self)
+        self.button_7 = QPushButton('Draw integral', self)
         self.plot = PlotCanvas(self, width=6, height=5)
         self.initUI()
 
         self._drown_1 = False
         self._drown_2 = False
+        self._drown_3 = False
 
     def initUI(self):
         self.setWindowTitle(self.title)
@@ -111,7 +113,7 @@ class App(QMainWindow):
         self.button_4.clicked.connect(self.draw_derivative)
 
         self.button_5.setToolTip('Push to clean all the fields')
-        self.button_5.move(610, 375)
+        self.button_5.move(610, 430)
         self.button_5.resize(180, 40)
         self.button_5.clicked.connect(self.clean_all)
 
@@ -143,6 +145,11 @@ class App(QMainWindow):
         self.button_6.move(240, 600)
         self.button_6.resize(100, 40)
         self.button_6.clicked.connect(self.calculate)
+
+        self.button_7.setToolTip('Push to draw integral')
+        self.button_7.move(610, 375)
+        self.button_7.resize(180, 40)
+        self.button_7.clicked.connect(self.draw_integral)
 
         self.show()
 
@@ -222,6 +229,14 @@ class App(QMainWindow):
             self.line_edit_4.setText(str(self.solver.function(x)))
             self.line_edit_5.setText(str(self.solver.diff_function(x)))
 
+    @pyqtSlot()
+    def draw_integral(self):
+        if not self._drown_3:
+            self._drown_3 = True
+            self.plot.plot_integral(self.solver.calculate_integral, '$\int_{-10}^{x} f(x)dx$')
+        else:
+            return
+
 
 class PlotCanvas(FigureCanvas):
     def __init__(self, parent=None, width=5, height=4, dpi=100):
@@ -241,6 +256,22 @@ class PlotCanvas(FigureCanvas):
         ax = self.figure.add_subplot(111)
         x = np.arange(-10, 10, 0.1)
         ax.plot(x, func(x), label=name)
+        ax.set_title('Coordinate plane')
+        ax.legend()
+        self.draw()
+
+    def plot_integral(self, func, name=''):
+        ax = self.figure.add_subplot(111)
+        x = np.arange(-10, 10, 0.1)
+        y = []
+        for i in x:
+            if i > -10:
+                y.append(func(a=i-0.1, b=i))
+            else:
+                y.append(0)
+        y = np.array(y)
+        y = np.cumsum(y)
+        ax.plot(x, y, label=name)
         ax.set_title('Coordinate plane')
         ax.legend()
         self.draw()
