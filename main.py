@@ -10,7 +10,6 @@ from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
 import matplotlib.pyplot as plt
 
-import random
 import numpy as np
 import researcher as res
 
@@ -45,6 +44,7 @@ class App(QMainWindow):
         self.line_edit_3 = QLineEdit(self)
         self.line_edit_4 = QLineEdit(self)
         self.line_edit_5 = QLineEdit(self)
+        self.line_edit_6 = QLineEdit(self)
         self.button_1 = QPushButton('Calculate integral', self)
         self.button_2 = QPushButton('Find zeroes', self)
         self.button_3 = QPushButton('Draw f(x)', self)
@@ -52,6 +52,7 @@ class App(QMainWindow):
         self.button_5 = QPushButton('Clean', self)
         self.button_6 = QPushButton('Calculate', self)
         self.button_7 = QPushButton('Draw integral', self)
+        self.button_8 = QPushButton('Calculate square', self)
         self.plot = PlotCanvas(self, width=6, height=5)
         self.initUI()
 
@@ -151,6 +152,15 @@ class App(QMainWindow):
         self.button_7.resize(180, 40)
         self.button_7.clicked.connect(self.draw_integral)
 
+        self.button_8.setToolTip('Push to see the result in the field below')
+        self.button_8.move(350, 510)
+        self.button_8.resize(160, 40)
+        self.button_8.clicked.connect(self.calc_square)
+
+        self.line_edit_6.move(350, 560)
+        self.line_edit_6.resize(160, 30)
+        self.line_edit_6.setReadOnly(True)
+
         self.show()
 
     def on_changed_a(self, text):
@@ -187,6 +197,7 @@ class App(QMainWindow):
         self.line_edit_3.clear()
         self.line_edit_4.clear()
         self.line_edit_5.clear()
+        self.line_edit_6.clear()
 
     @pyqtSlot()
     def calculate_integral(self):
@@ -203,6 +214,7 @@ class App(QMainWindow):
         for i in np.arange(len(zeroes)):
             result = result + str(zeroes[i]) + '\n'
         self.line_edit_2.setText(result)
+        self.plot.add_scatter(zeroes, np.zeros(len(zeroes)))
 
     @pyqtSlot()
     def draw_function(self):
@@ -236,6 +248,12 @@ class App(QMainWindow):
             self.plot.plot_integral(self.solver.calculate_integral, '$\int_{-10}^{x} f(x)dx$')
         else:
             return
+
+    @pyqtSlot()
+    def calc_square(self):
+        zeroes = self.solver.find_zeroes()
+        result = self.solver.calculate_integral(a=zeroes[1], b=zeroes[2])
+        self.line_edit_6.setText(str(result))
 
 
 class PlotCanvas(FigureCanvas):
@@ -279,6 +297,11 @@ class PlotCanvas(FigureCanvas):
     def add_grid(self):
         ax = self.figure.add_subplot(111)
         ax.grid()
+
+    def add_scatter(self, x, y):
+        ax = self.figure.add_subplot(111)
+        ax.scatter(x, y)
+        self.draw()
 
 
 if __name__ == '__main__':
