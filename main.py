@@ -18,20 +18,21 @@ class App(QMainWindow):
     def __init__(self):
         super().__init__()
 
-        # Main window parameters
+        # Параметры главного окна
         self.left = 10
         self.top = 10
         self.title = 'Graphic Researcher'
         self.width = 800
         self.height = 650
 
-        # Borders of the interval and Researcher object
+        # Границы интервала
         self.a = -10.0
         self.b = 10.0
+        # Текущее значение х для рассчета функции и производной
         self.x = ''
         self.solver = res.Researcher()
 
-        # Window fields and buttons
+        # Инициализация текстовых полей и кнопок
         self.label_a = QLabel(self)
         self.label_b = QLabel(self)
         self.label_1 = QLabel(self)
@@ -53,13 +54,18 @@ class App(QMainWindow):
         self.button_6 = QPushButton('Calculate', self)
         self.button_7 = QPushButton('Draw integral', self)
         self.button_8 = QPushButton('Calculate square', self)
+
+        # Инициализация координатной плоскости
         self.plot = PlotCanvas(self, width=6, height=5)
+        # Отрисовка главного окна
         self.initUI()
 
+        # Булевы поля, отвечающие за отрисовку каждого из 3-х графиков
         self._drown_1 = False
         self._drown_2 = False
         self._drown_3 = False
 
+    # Функция, отрисовывающая графический интерфейс программы
     def initUI(self):
         self.setWindowTitle(self.title)
         self.setGeometry(self.left, self.top, self.width, self.height)
@@ -163,6 +169,7 @@ class App(QMainWindow):
 
         self.show()
 
+    # Метод, реагирующий на ввод пользователем левой границы интервала
     def on_changed_a(self, text):
         if len(text) == 0:
             return
@@ -174,6 +181,7 @@ class App(QMainWindow):
         else:
             self.a = float(text)
 
+    # Метод, реагирующий на ввод пользователем правой границы интервала
     def on_changed_b(self, text):
         if len(text) == 0:
             return
@@ -185,9 +193,11 @@ class App(QMainWindow):
         else:
             self.b = float(text)
 
+    # Метод, реагирующий на ввод пользователем значения х
     def on_changed_1(self, text):
         self.x = text
 
+    # Метод, очищающий все текстовые поля
     @pyqtSlot()
     def clean_all(self):
         self.line_edit_1.clear()
@@ -199,23 +209,30 @@ class App(QMainWindow):
         self.line_edit_5.clear()
         self.line_edit_6.clear()
 
+    # Метод, рассчитывающий интеграл
     @pyqtSlot()
     def calculate_integral(self):
+        # Проверка интервала на корректность
         if self.a > self.b:
             self.line_edit_1.setText('Wrong params')
             return
         result = self.solver.calculate_integral(a=self.a, b=self.b)
+        # Вывод результата
         self.line_edit_1.setText(str(result))
 
+    # Метод, рассчитывающий корни уравнения
     @pyqtSlot()
     def find_zeroes(self):
         zeroes = self.solver.find_zeroes()
         result = ""
         for i in np.arange(len(zeroes)):
             result = result + str(zeroes[i]) + '\n'
+        # Вывод результата
         self.line_edit_2.setText(result)
+        # Отрисовка точек на координатной плоскости
         self.plot.add_scatter(zeroes, np.zeros(len(zeroes)))
 
+    # Метод, русующий график функции
     @pyqtSlot()
     def draw_function(self):
         if not self._drown_1:
@@ -224,6 +241,7 @@ class App(QMainWindow):
         else:
             return
 
+    # Метод, русующий график производной
     @pyqtSlot()
     def draw_derivative(self):
         if not self._drown_2:
@@ -232,15 +250,18 @@ class App(QMainWindow):
         else:
             return
 
+    # Метод, рассчитывающий значения функции и ее производной в конкретной точке
     @pyqtSlot()
     def calculate(self):
         if len(self.x) == 0:
             return
         else:
             x = float(self.x)
+            # Вывод результата
             self.line_edit_4.setText(str(self.solver.function(x)))
             self.line_edit_5.setText(str(self.solver.diff_function(x)))
 
+    # Метод, русующий график итеграла
     @pyqtSlot()
     def draw_integral(self):
         if not self._drown_3:
@@ -249,14 +270,18 @@ class App(QMainWindow):
         else:
             return
 
+    # Метод, рассчитывающий площадь под графиком функции
     @pyqtSlot()
     def calc_square(self):
         zeroes = self.solver.find_zeroes()
         result = self.solver.calculate_integral(a=zeroes[1], b=zeroes[2])
+        # Вывод результата
         self.line_edit_6.setText(str(result))
 
 
+# Класс, отвечающий за отрисовку координатной плоскости и графиков
 class PlotCanvas(FigureCanvas):
+    # Инициализация
     def __init__(self, parent=None, width=5, height=4, dpi=100):
         fig = Figure(figsize=(width, height), dpi=dpi)
         self.axes = fig.add_subplot(111)
@@ -270,6 +295,7 @@ class PlotCanvas(FigureCanvas):
         FigureCanvas.updateGeometry(self)
         self.add_grid()
 
+    # Метод, рисующий график функции и подписывающий его
     def plot(self, func, name=''):
         ax = self.figure.add_subplot(111)
         x = np.arange(-10, 10, 0.1)
@@ -278,6 +304,7 @@ class PlotCanvas(FigureCanvas):
         ax.legend()
         self.draw()
 
+    # Метод для отрисовки графика интеграла
     def plot_integral(self, func, name=''):
         ax = self.figure.add_subplot(111)
         x = np.arange(-10, 10, 0.1)
@@ -294,16 +321,19 @@ class PlotCanvas(FigureCanvas):
         ax.legend()
         self.draw()
 
+    # Метод, добавляющий сетку на координатную плоскость
     def add_grid(self):
         ax = self.figure.add_subplot(111)
         ax.grid()
 
+    # Метод, отрисовывающий точки на координатной плоскости
     def add_scatter(self, x, y):
         ax = self.figure.add_subplot(111)
         ax.scatter(x, y)
         self.draw()
 
 
+# Основная функция, выполняющаяся при запуске программы
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     ex = App()
