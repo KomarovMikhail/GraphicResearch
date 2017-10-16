@@ -1,7 +1,7 @@
 import sys
 
 from PyQt5.QtWidgets import QApplication, QMainWindow, QMenu, QVBoxLayout, QSizePolicy, QMessageBox, QWidget, \
-    QPushButton, QLabel, QLineEdit, QScrollArea, QScrollBar
+    QPushButton, QLabel, QLineEdit, QScrollArea, QScrollBar, QTextEdit
 from PyQt5.QtGui import QIcon
 
 from PyQt5.QtCore import pyqtSlot
@@ -41,7 +41,7 @@ class App(QMainWindow):
         self.line_edit_a = QLineEdit(self)
         self.line_edit_b = QLineEdit(self)
         self.line_edit_1 = QLineEdit(self)
-        self.line_edit_2 = QLineEdit(self)
+        self.line_edit_2 = QTextEdit(self)
         self.line_edit_3 = QLineEdit(self)
         self.line_edit_4 = QLineEdit(self)
         self.line_edit_5 = QLineEdit(self)
@@ -106,21 +106,21 @@ class App(QMainWindow):
         self.button_2.clicked.connect(self.find_zeroes)
 
         self.line_edit_2.move(610, 220)
-        self.line_edit_2.resize(180, 30)
+        self.line_edit_2.resize(180, 100)
         self.line_edit_2.setReadOnly(True)
 
         self.button_3.setToolTip('Push to draw graphic')
-        self.button_3.move(610, 265)
+        self.button_3.move(610, 335)
         self.button_3.resize(180, 40)
         self.button_3.clicked.connect(self.draw_function)
 
         self.button_4.setToolTip('Push to draw graphic')
-        self.button_4.move(610, 320)
+        self.button_4.move(610, 390)
         self.button_4.resize(180, 40)
         self.button_4.clicked.connect(self.draw_derivative)
 
         self.button_5.setToolTip('Push to clean all the fields')
-        self.button_5.move(610, 430)
+        self.button_5.move(610, 500)
         self.button_5.resize(180, 40)
         self.button_5.clicked.connect(self.clean_all)
 
@@ -154,7 +154,7 @@ class App(QMainWindow):
         self.button_6.clicked.connect(self.calculate)
 
         self.button_7.setToolTip('Push to draw integral')
-        self.button_7.move(610, 375)
+        self.button_7.move(610, 445)
         self.button_7.resize(180, 40)
         self.button_7.clicked.connect(self.draw_integral)
 
