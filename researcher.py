@@ -3,15 +3,17 @@ import numpy as np
 
 class Researcher:
 
+    # Инициализация класса
     def __init__(self):
+        # Допустимая погрешность
         self._eps = 0.0001
-        self._a = -10
-        self._b = 10
 
     @staticmethod
+    # Исследуемая функция
     def function(x):
         return 5 - ((2 - 18 * 5 * x) + 16 * (5 * x)**2) / (1 + 5 * x**4)
 
+    # Рассчет интеграла в заданных пределах
     def calculate_integral(self, a=-10, b=10):
 
         """ method of medium rectangles """
@@ -24,12 +26,14 @@ class Researcher:
 
         return result
 
+    # Поиск нулей функции
     def find_zeroes(self):
 
         """ method of chords
         Using graphic we found the following intervals
         which contain zeroes of the function: """
 
+        # Интервалы, содержащие нули функции
         intervals = [[-5, -3], [-1, 0], [0.175, 1], [3, 5]]
         result = []
 
@@ -49,8 +53,10 @@ class Researcher:
         return result
 
     @staticmethod
+    # Производная функции
     def diff_function(x):
         return 2 * 5 * (16 * 5**2 * x**5 - 5 * (27 * x**3 + 16) * x + 4 * x**3 + 9) / (5 * x**4 + 1)**2
 
+    # Функция, возвращающая значение погрешности
     def get_eps(self):
         return self._eps
